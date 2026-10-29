@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: ./task-manager-test-api
+      dockerfile: Dockerfile
+    container_name: task-manager-api
+    image: florianfifteen/task-manager-api:1.0
+    environment:
+      APP_PORT: "3000"
+      API_VERSION: /api/v1
+    env_file:
+      - .env
+    ports:
+      - "3000:${APP_PORT}"
+  frontend:
+    build:
+      context: ./task-manager-test-frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=http://localhost:3000/api/v1
+    image: florianfifteen/task-manager-frontend:1.0
+    environment:
+      VITE_API_BASE_URL: "http://localhost:3000/api/v1"
+    env_file:
+      - .env
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
