@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import api from '@/lib/axios'
+const apiUrl = import.meta.env.VITE_API_BASE_URL
 
 const STATUSES = ['PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']
 const badge = {
@@ -32,7 +33,7 @@ const toDateInput = (value) => (value ? value.slice(0, 10) : '')
 
 const load = async () => {
   try {
-    const [p, c] = await Promise.all([api.get('/projects'), api.get('/customers')])
+    const [p, c] = await Promise.all([api.get(`${apiUrl}/projects`), api.get(`${apiUrl}/customers`)])
     projects.value = p.data.projects
     customers.value = c.data.customers
   } catch (e) {
@@ -47,8 +48,8 @@ const submit = async () => {
   if (!payload.start_date) delete payload.start_date
   try {
     const { data } = editingId.value
-      ? await api.put(`/projects/${editingId.value}`, payload)
-      : await api.post('/projects', payload)
+      ? await api.put(`${apiUrl}/projects/${editingId.value}`, payload)
+      : await api.post(`${apiUrl}/projects`, payload)
     success.value = data.message
     reset()
     await load()
@@ -74,7 +75,7 @@ const edit = (project) => {
 const remove = async (id) => {
   error.value = ''
   try {
-    const { data } = await api.delete(`/projects/${id}`)
+    const { data } = await api.delete(`${apiUrl}/projects/${id}`)
     success.value = data.message
     await load()
   } catch (e) {

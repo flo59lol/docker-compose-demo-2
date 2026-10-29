@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue'
 import api from '@/lib/axios'
 
+const apiUrl = import.meta.env.VITE_API_BASE_URL
+
 const STATUSES = ['TODO', 'IN_PROGRESS', 'COMPLETED']
 const PRIORITIES = ['LOW', 'MEDIUM', 'HIGH']
 const statusBadge = { TODO: 'secondary', IN_PROGRESS: 'primary', COMPLETED: 'success' }
@@ -27,7 +29,7 @@ const projectName = (id) => projects.value.find((p) => p.id === id)?.name ?? 'â€
 
 const load = async () => {
   try {
-    const [t, p] = await Promise.all([api.get('/tasks'), api.get('/projects')])
+    const [t, p] = await Promise.all([api.get(`${apiUrl}/tasks`), api.get(`${apiUrl}/projects`)])
     tasks.value = t.data.tasks
     projects.value = p.data.projects
   } catch (e) {
@@ -39,8 +41,8 @@ const submit = async () => {
   error.value = ''
   try {
     const { data } = editingId.value
-      ? await api.put(`/tasks/${editingId.value}`, form.value)
-      : await api.post('/tasks', form.value)
+      ? await api.put(`${apiUrl}/tasks/${editingId.value}`, form.value)
+      : await api.post(`${apiUrl}/tasks`, form.value)
     success.value = data.message
     reset()
     await load()
@@ -64,7 +66,7 @@ const edit = (task) => {
 const remove = async (id) => {
   error.value = ''
   try {
-    const { data } = await api.delete(`/tasks/${id}`)
+    const { data } = await api.delete(`${apiUrl}/tasks/${id}`)
     success.value = data.message
     await load()
   } catch (e) {

@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue'
 import api from '@/lib/axios'
 
+const apiUrl = import.meta.env.VITE_API_BASE_URL
+
 const emptyForm = () => ({ name: '', email: '', phone: '', address: '' })
 
 const customers = ref([])
@@ -12,7 +14,7 @@ const success = ref('')
 
 const load = async () => {
   try {
-    const { data } = await api.get('/customers')
+    const { data } = await api.get(`${apiUrl}/customers`)
     customers.value = data.customers
   } catch (e) {
     error.value = e.message
@@ -23,8 +25,8 @@ const submit = async () => {
   error.value = ''
   try {
     const { data } = editingId.value
-      ? await api.put(`/customers/${editingId.value}`, form.value)
-      : await api.post('/customers', form.value)
+      ? await api.put(`${apiUrl}/customers/${editingId.value}`, form.value)
+      : await api.post(`${apiUrl}/customers`, form.value)
     success.value = data.message
     reset()
     await load()
@@ -46,7 +48,7 @@ const edit = (customer) => {
 const remove = async (id) => {
   error.value = ''
   try {
-    const { data } = await api.delete(`/customers/${id}`)
+    const { data } = await api.delete(`${apiUrl}/customers/${id}`)
     success.value = data.message
     await load()
   } catch (e) {
